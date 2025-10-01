@@ -90,6 +90,13 @@
       letter-spacing: 1px;
     }
 
+    /* --- NEW CSS FOR CONTACT INFO --- */
+    .company-header .contact-info {
+        font-size: 12px;
+        margin-top: 10px;
+        color: #333;
+    }
+
     .header {
       display: flex;
       justify-content: space-between;
@@ -127,7 +134,8 @@
       font-size: inherit;
       color: inherit;
       resize: none;
-      box-sizing: border-box; /* Added for better width calculation */
+      box-sizing: border-box;
+      /* Added for better width calculation */
     }
 
     textarea {
@@ -171,12 +179,16 @@
     }
 
     .description {
-      width: 45%;
+      width: 40%;
+    }
+
+    .company{
+      width: 20%;
     }
 
     .qty {
       text-align: right;
-      width: 10%;
+      width: 5%;
     }
 
     .unit {
@@ -186,7 +198,7 @@
 
     .unit-price {
       text-align: right;
-      width: 15%;
+      width: 10%;
     }
 
     .total-price {
@@ -296,6 +308,11 @@
       <img src="Logo.png" alt="Company Logo">
       <h2>GRID</h2>
       <p class="tagline">Home Interior Design</p>
+      <div class="contact-info">
+        <span>📞 +91 99618 57511</span>
+        <span style="margin: 0 15px;">|</span>
+        <span>📸 @grid.arc</span>
+      </div>
     </div>
 
     <h1>Quotation</h1>
@@ -380,8 +397,9 @@
               <tr>
                 <th class="si-no">SI No</th>
                 <th class="description">Description</th>
+                <th class="company">Company</th>
                 <th class="qty">Qty</th>
-                <th class="unit">Unit</th>
+                <th class="unit">Unit(SQFT)</th>
                 <th class="unit-price">Unit Price</th>
                 <th class="total-price">Total Price</th>
                 <th class="actions"></th>
@@ -403,6 +421,7 @@
         row.innerHTML = `
           <td class="si-no"><input type="text" class="si-no-input"></td>
           <td class="description"><textarea class="desc-input"></textarea></td>
+          <td class="company"><textarea class="desc-input">Company Name</textarea></td>
           <td class="qty"><input type="text" class="qty-input" value="1"></td>
           <td class="unit"><input type="text" class="unit-input" value="SQFT"></td>
           <td class="unit-price"><input type="number" class="unit-price-input" value="0.00" step="0.01"></td>
@@ -425,7 +444,7 @@
           const div = document.createElement('div');
           // Replace newline characters with <br> tags for HTML rendering
           div.innerHTML = textarea.value.replace(/\n/g, '<br>');
-          
+
           // Apply styles to mimic the textarea for consistent looks
           div.style.cssText = `
             width: 100%;
@@ -439,7 +458,7 @@
             box-sizing: border-box;
           `;
           div.classList.add('temp-print-div'); // Add a class for easy removal later
-          
+
           textarea.style.display = 'none'; // Hide the original textarea
           textarea.parentNode.insertBefore(div, textarea); // Insert the div in its place
         });
@@ -486,10 +505,6 @@
       const masterBed = createSection('MASTER BED ROOM');
       masterBed.querySelector('tbody').appendChild(createItemRow());
       sectionsContainer.appendChild(masterBed);
-
-      const dining = createSection('DINING ROOM');
-      dining.querySelector('tbody').appendChild(createItemRow());
-      sectionsContainer.appendChild(dining);
 
       updateAllCalculations();
 
