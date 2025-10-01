@@ -7,6 +7,7 @@
   <title>Editable Quotation Generator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://kit.fontawesome.com/86529636e5.js" crossorigin="anonymous"></script>
   <style>
     body {
       font-family: 'Times New Roman', Times, serif;
@@ -90,12 +91,51 @@
       letter-spacing: 1px;
     }
 
-    /* --- NEW CSS FOR CONTACT INFO --- */
+    /* --- CSS FOR CONTACT INFO --- */
     .company-header .contact-info {
-        font-size: 12px;
-        margin-top: 10px;
-        color: #333;
+      font-size: 12px;
+      margin-top: 10px;
+      color: #333;
+      /* --- START: ALIGNMENT FIX --- */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* --- END: ALIGNMENT FIX --- */
     }
+
+    /* CSS */
+    .instagram-gradient {
+      /* make gradient paint the text */
+      background: radial-gradient(circle at 30% 107%,
+          #fdf497 0%,
+          #fdf497 5%,
+          #fd5949 45%,
+          #d6249f 60%,
+          #285AEB 90%);
+
+      /* ensure the background is clipped to the text glyphs */
+      -webkit-background-clip: text;
+      /* Safari / Chrome */
+      background-clip: text;
+      /* standard */
+
+      /* make the text transparent so the background shows through */
+      -webkit-text-fill-color: transparent;
+      /* Safari / Chrome */
+      color: transparent;
+      /* fallback for other browsers */
+
+      /* sizing and alignment */
+      font-size: 15px;
+
+      /* keep it inline but allow background clipping to work reliably */
+      display: inline-block;
+
+      /* optional: ensure no extra whitespace/overflow issues */
+      line-height: 1;
+
+    }
+
 
     .header {
       display: flex;
@@ -182,7 +222,7 @@
       width: 40%;
     }
 
-    .company{
+    .company {
       width: 20%;
     }
 
@@ -309,9 +349,10 @@
       <h2>GRID</h2>
       <p class="tagline">Home Interior Design</p>
       <div class="contact-info">
-        <span>📞 +91 99618 57511</span>
+        <span>📞 +91 99618 57511 &nbsp; +91 94950 81179</span>
         <span style="margin: 0 15px;">|</span>
-        <span>📸 @grid.arc</span>
+        <i class="fa-brands fa-instagram instagram-gradient" aria-hidden="true"></i>
+        <span>&nbsp;@grid.arc</span>
       </div>
     </div>
 
