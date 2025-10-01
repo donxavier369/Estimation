@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editable Quotation Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f8f8;
+      color: #000;
+      line-height: 1.4;
+    }
+
+    .controls {
+      padding: 15px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    #download-btn {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-family: inherit;
+      transition: background-color 0.3s;
+    }
+
+    #download-btn:hover {
+      background-color: #34495e;
+    }
+
+    #quotation-paper {
+      background-color: #fff;
+      padding: 50px;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 3px double #000;
+      padding-bottom: 10px;
+    }
+
+    .company-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .company-header img {
+      width: 140px;
+      height: auto;
+      display: block;
+      margin: 0 auto 10px;
+    }
+
+    .company-header h2 {
+      font-size: 32px;
+      margin: 0;
+      font-weight: bold;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      letter-spacing: 2px;
+    }
+
+    .company-header .tagline {
+      font-size: 14px;
+      margin-top: 5px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .header-left,
+    .header-right {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-left div,
+    .header-right div {
+      margin-bottom: 8px;
+    }
+
+    .header strong {
+      display: inline-block;
+      width: 120px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 4px;
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      resize: none;
+      box-sizing: border-box; /* Added for better width calculation */
+    }
+
+    textarea {
+      min-height: 40px;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-bottom: 1px solid #000;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      border: none;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: #f8f8f8;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 11px;
+    }
+
+    .si-no {
+      text-align: center;
+      width: 5%;
+    }
+
+    .description {
+      width: 45%;
+    }
+
+    .qty {
+      text-align: right;
+      width: 10%;
+    }
+
+    .unit {
+      text-align: center;
+      width: 10%;
+    }
+
+    .unit-price {
+      text-align: right;
+      width: 15%;
+    }
+
+    .total-price {
+      text-align: right;
+      width: 15%;
+      font-weight: bold;
+    }
+
+    .actions {
+      width: 5%;
+      text-align: center;
+    }
+
+    .section-header {
+      background-color: #2c3e50;
+      color: white;
+      font-weight: bold;
+      padding: 12px 15px;
+      margin: 30px 0 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 4px 4px 0 0;
+      font-size: 14px;
+    }
+
+    .section-total,
+    .grand-total {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 14px;
+      padding: 10px;
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+    }
+
+    .grand-total {
+      margin-top: 30px;
+      font-size: 16px;
+      padding: 15px;
+      border: 2px solid #000;
+      background-color: #fff;
+      text-transform: uppercase;
+    }
+
+    .delete-btn,
+    .add-btn {
+      cursor: pointer;
+      padding: 6px 12px;
+      border: none;
+      color: white;
+      border-radius: 3px;
+      font-size: 12px;
+      transition: background-color 0.3s;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+    }
+
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .add-btn {
+      background-color: #3498db;
+    }
+
+    .add-btn:hover {
+      background-color: #2980b9;
+    }
+
+    #add-section-btn {
+      display: block;
+      margin: 30px auto;
+      background-color: #2c3e50;
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+
+    @media print {
+
+      .controls,
+      .delete-btn,
+      .add-btn {
+        display: none !important;
+      }
+
+      #quotation-paper {
+        border: none;
+        box-shadow: none;
+        max-width: 100%;
+        padding: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="controls">
+    <button id="download-btn">Download as PDF</button>
+  </div>
+
+  <div id="quotation-paper">
+    <div class="company-header">
+      <img src="Logo.png" alt="Company Logo">
+      <h2>GRID</h2>
+      <p class="tagline">Home Interior Design</p>
+    </div>
+
+    <h1>Quotation</h1>
+    <div class="header">
+      <div class="header-left">
+        <div><strong>Quotation for:</strong> <input type="text" value="Mr. Arun"></div>
+        <div><strong>Project:</strong> <input type="text" value="Residence Interior"></div>
+        <div><strong>Prepared by:</strong> <input type="text" value="Festin"></div>
+      </div>
+      <div class="header-right">
+        <div><strong>Ref No #:</strong> <input type="text" id="ref-no" value="5177"></div>
+        <div><strong>Date:</strong> <input type="date" value="2025-07-27"></div>
+        <div><strong>Due date:</strong> <input type="date" value="2025-08-15"></div>
+      </div>
+    </div>
+
+    <div id="sections-container"></div>
+    <button id="add-section-btn" class="add-btn">Add New Section</button>
+
+    <div class="grand-total">
+      <span>Grand Total: </span><span id="grand-total-amount">₹0.00</span>
+    </div>
+  </div>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const sectionsContainer = document.getElementById('sections-container');
+      const grandTotalAmount = document.getElementById('grand-total-amount');
+
+      // --- Auto-expand textarea ---
+      document.addEventListener('input', function (e) {
+        if (e.target.tagName.toLowerCase() === 'textarea') {
+          e.target.style.height = 'auto';
+          e.target.style.height = (e.target.scrollHeight) + 'px';
+        }
+      });
+
+      function updateAllCalculations() {
+        let grandTotal = 0;
+        document.querySelectorAll('.quotation-section').forEach(section => {
+          let sectionTotal = 0;
+          section.querySelectorAll('tbody tr').forEach(row => {
+            const qtyInput = row.querySelector('.qty-input');
+            const unitPriceInput = row.querySelector('.unit-price-input');
+            const totalPriceCell = row.querySelector('.total-price');
+            let qty = parseFloat(qtyInput.value) || 0;
+            let unitPrice = parseFloat(unitPriceInput.value) || 0;
+            let rowTotal = 0;
+
+            if (qtyInput.value.trim().toUpperCase() === 'LS') {
+              rowTotal = parseFloat(totalPriceCell.querySelector('input')?.value) || 0;
+              unitPriceInput.disabled = true;
+            } else {
+              unitPriceInput.disabled = false;
+              rowTotal = qty * unitPrice;
+              totalPriceCell.textContent = formatCurrency(rowTotal);
+            }
+            sectionTotal += rowTotal;
+          });
+          section.querySelector('.section-total-amount').textContent = formatCurrency(sectionTotal);
+          grandTotal += sectionTotal;
+        });
+        grandTotalAmount.textContent = formatCurrency(grandTotal);
+      }
+
+      function formatCurrency(amount) {
+        return `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+
+      function createSection(title = 'NEW SECTION') {
+        const section = document.createElement('div');
+        section.className = 'quotation-section';
+        section.innerHTML = `
+          <div class="section-header">
+            <input type="text" value="${title}" style="background:none; color:white; border:none; font-weight:bold; flex-grow:1;">
+            <button class="delete-btn delete-section-btn">Delete Section</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th class="si-no">SI No</th>
+                <th class="description">Description</th>
+                <th class="qty">Qty</th>
+                <th class="unit">Unit</th>
+                <th class="unit-price">Unit Price</th>
+                <th class="total-price">Total Price</th>
+                <th class="actions"></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <button class="add-btn add-item-btn">Add Item</button>
+          <div class="section-total">
+            <span>TOTAL COST FOR ${title.toUpperCase()}: </span>
+            <span class="section-total-amount">₹0.00</span>
+          </div>
+        `;
+        return section;
+      }
+
+      function createItemRow() {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="si-no"><input type="text" class="si-no-input"></td>
+          <td class="description"><textarea class="desc-input"></textarea></td>
+          <td class="qty"><input type="text" class="qty-input" value="1"></td>
+          <td class="unit"><input type="text" class="unit-input" value="SQFT"></td>
+          <td class="unit-price"><input type="number" class="unit-price-input" value="0.00" step="0.01"></td>
+          <td class="total-price">₹0.00</td>
+          <td class="actions"><button class="delete-btn delete-row-btn">X</button></td>
+        `;
+        return row;
+      }
+
+      // --- PDF Export with multi-page support ---
+      document.getElementById('download-btn').addEventListener('click', () => {
+        const quotationPaper = document.getElementById('quotation-paper');
+        const refNo = document.getElementById('ref-no').value || 'quotation';
+        const filename = `Quotation-${refNo}.pdf`;
+
+        // --- START: FIX FOR TEXTAREA TRUNCATION ---
+        // Temporarily replace textareas with divs to ensure full content is captured
+        const textareas = quotationPaper.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+          const div = document.createElement('div');
+          // Replace newline characters with <br> tags for HTML rendering
+          div.innerHTML = textarea.value.replace(/\n/g, '<br>');
+          
+          // Apply styles to mimic the textarea for consistent looks
+          div.style.cssText = `
+            width: 100%;
+            padding: 4px;
+            line-height: 1.4;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            white-space: normal;
+            word-break: break-word;
+            box-sizing: border-box;
+          `;
+          div.classList.add('temp-print-div'); // Add a class for easy removal later
+          
+          textarea.style.display = 'none'; // Hide the original textarea
+          textarea.parentNode.insertBefore(div, textarea); // Insert the div in its place
+        });
+        // --- END: FIX FOR TEXTAREA TRUNCATION ---
+
+        document.querySelectorAll('.delete-btn, .add-btn, #add-section-btn, .controls').forEach(el => el.style.display = 'none');
+
+        html2canvas(quotationPaper, { scale: 2, windowWidth: quotationPaper.scrollWidth, windowHeight: quotationPaper.scrollHeight }).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('p', 'pt', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const imgHeight = canvas.height * pdfWidth / canvas.width;
+
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
+
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
+          }
+
+          pdf.save(filename);
+
+          // --- START: CLEANUP AFTER PDF GENERATION ---
+          // Remove the temporary divs
+          document.querySelectorAll('.temp-print-div').forEach(div => div.remove());
+          // Show the original textareas again
+          textareas.forEach(textarea => {
+            textarea.style.display = '';
+          });
+          // --- END: CLEANUP AFTER PDF GENERATION ---
+
+          document.querySelectorAll('.delete-btn, .add-btn, #add-section-btn, .controls').forEach(el => el.style.display = '');
+        });
+      });
+
+      // Setup default sections
+      const masterBed = createSection('MASTER BED ROOM');
+      masterBed.querySelector('tbody').appendChild(createItemRow());
+      sectionsContainer.appendChild(masterBed);
+
+      const dining = createSection('DINING ROOM');
+      dining.querySelector('tbody').appendChild(createItemRow());
+      sectionsContainer.appendChild(dining);
+
+      updateAllCalculations();
+
+      sectionsContainer.addEventListener('click', e => {
+        if (e.target.classList.contains('delete-row-btn')) {
+          e.target.closest('tr').remove();
+          updateAllCalculations();
+        }
+        if (e.target.classList.contains('add-item-btn')) {
+          e.target.closest('.quotation-section').querySelector('tbody').appendChild(createItemRow());
+        }
+        if (e.target.classList.contains('delete-section-btn')) {
+          e.target.closest('.quotation-section').remove();
+          updateAllCalculations();
+        }
+      });
+
+      sectionsContainer.addEventListener('input', e => {
+        if (e.target.classList.contains('qty-input') || e.target.classList.contains('unit-price-input')) {
+          updateAllCalculations();
+        }
+      });
+
+      document.getElementById('add-section-btn').addEventListener('click', () => {
+        sectionsContainer.appendChild(createSection());
+      });
+    });
+  </script>
+</body>
+
+</html>
